@@ -1,33 +1,29 @@
 package com.test.demo.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
+import lombok.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-@Data
 @Entity
 @Table(name = "students")
-@JsonIgnoreProperties({"createdAt", "updatedAt", "courses"})
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Student {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private String code; // mã sinh viên
+
+    @Column(nullable = false)
     private String name;
-    private String studentNumber;
 
-    @CreationTimestamp
     private LocalDateTime createdAt;
-
-    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @ManyToMany(mappedBy = "students")
-    private Set<Course> courses = new HashSet<>();
+    @OneToMany(mappedBy = "student")
+    private List<StudentCourse> studentCourses;
 }

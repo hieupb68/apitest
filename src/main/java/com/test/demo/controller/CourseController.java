@@ -1,58 +1,35 @@
 package com.test.demo.controller;
 
-import com.test.demo.entity.Course;
-import com.test.demo.entity.Student;
+import com.test.demo.dto.CourseResponse;
+import com.test.demo.dto.CreateCourseRequest;
+import com.test.demo.dto.RegisterCourseRequest;
+import com.test.demo.dto.RegisteredStudentDto;
 import com.test.demo.service.CourseService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/courses")
+@RequiredArgsConstructor
 public class CourseController {
-
-    @Autowired
-    private CourseService courseService;
-
-    @GetMapping
-    public ResponseEntity<List<Course>> getAllCourses() {
-        List<Course> courses = courseService.getAllCourse();
-        return ResponseEntity.ok(courses);
-    }
+    private final CourseService courseService;
 
     @PostMapping
-    public ResponseEntity<Course> createCourse(@RequestBody Course course) {
-        Course createdCourse = courseService.createCourse(course);
-        return ResponseEntity.ok(createdCourse);
+    public ResponseEntity<Void> createCourse(@Valid @RequestBody CreateCourseRequest request) {
+        courseService.createCourse(request);
+        return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{courseId}/students/{studentId}")
-    public ResponseEntity<Course> addStudentToCourse(
-            @PathVariable Long courseId,
-            @PathVariable Long studentId) {
-        Course updatedCourse = courseService.addStudentToCourse(courseId, studentId);
-        return ResponseEntity.ok(updatedCourse);
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(@Valid @RequestBody RegisterCourseRequest request) {
+        courseService.registerCourse(request);
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/teacher/{teacherId}")
-    public ResponseEntity<List<Course>> getCoursesByTeacher(@PathVariable Long teacherId) {
-        List<Course> courses = courseService.findCourseByTeacher(teacherId);
-        return ResponseEntity.ok(courses);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Course> getCourseById(@PathVariable Long id) {
-        return courseService.getCourseById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/{courseId}/students")
-    public ResponseEntity<List<Student>> getStudentsInCourse(@PathVariable Long courseId) {
-        List<Student> students = courseService.getStudentsInCourseSortedByName(courseId);
-        return ResponseEntity.ok(students);
+    @GetMapping("/{courseId}")
+    public ResponseEntity<CourseResponse> getDetail(@PathVariable Long courseId) {
+        return ResponseEntity.ok(courseService.getCourseDetail(courseId));
     }
 }
