@@ -1,71 +1,71 @@
--- Bảng giảng viên (teachers)
-CREATE TABLE IF NOT EXISTS teachers (
-                                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                        name VARCHAR(255) NOT NULL,
-    created_at DATETIME,
-    updated_at DATETIME
-    );
-
--- Bảng sinh viên (students)
-CREATE TABLE IF NOT EXISTS students (
-                                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                        code VARCHAR(255) NOT NULL UNIQUE,
-    name VARCHAR(255) NOT NULL,
-    created_at DATETIME,
-    updated_at DATETIME
-    );
-
--- Bảng lớp học tín chỉ (courses)
-CREATE TABLE IF NOT EXISTS courses (
-                                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                       code VARCHAR(255) NOT NULL UNIQUE,
-    subject_name VARCHAR(255) NOT NULL,
-    start_time DATETIME NOT NULL,
-    end_time DATETIME NOT NULL,
-    max_students INT NOT NULL,
-    created_at DATETIME,
-    updated_at DATETIME,
-    teacher_id BIGINT,
-    FOREIGN KEY (teacher_id) REFERENCES teachers(id)
-    );
-
--- Bảng liên kết sinh viên - lớp học (student_courses)
-CREATE TABLE IF NOT EXISTS student_courses (
-                                               id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                               student_id BIGINT,
-                                               course_id BIGINT,
-                                               registered_at DATETIME,
-                                               FOREIGN KEY (student_id) REFERENCES students(id),
-    FOREIGN KEY (course_id) REFERENCES courses(id)
-    );
--- Thêm dữ liệu cho bảng teachers
-INSERT INTO teachers (name, created_at, updated_at) VALUES
-                                                        ('Nguyen Van A', NOW(), NOW()),
-                                                        ('Tran Thi B', NOW(), NOW()),
-                                                        ('Le Thi C', NOW(), NOW()),
-                                                        ('Pham Van D', NOW(), NOW()),
-                                                        ('Hoang Thi E', NOW(), NOW());
-
--- Thêm dữ liệu cho bảng students
-INSERT INTO students (code, name, created_at, updated_at) VALUES
-                                                              ('SV001', 'Nguyen Minh Anh', NOW(), NOW()),
-                                                              ('SV002', 'Tran Quoc Bao', NOW(), NOW()),
-                                                              ('SV003', 'Le Thi Cam', NOW(), NOW()),
-                                                              ('SV004', 'Pham Van Duong', NOW(), NOW()),
-                                                              ('SV005', 'Hoang Thi Em', NOW(), NOW());
-
--- Thêm dữ liệu cho bảng courses
-INSERT INTO courses (code, subject_name, start_time, end_time, max_students, created_at, updated_at, teacher_id) VALUES
-                                                                                                                     ('C001', 'Toan Cao Cap', '2024-06-01 08:00:00', '2024-06-01 10:00:00', 30, NOW(), NOW(), 1),
-                                                                                                                     ('C002', 'Lap Trinh Java', '2024-06-02 09:00:00', '2024-06-02 11:00:00', 25, NOW(), NOW(), 2),
-                                                                                                                     ('C003', 'Co So Du Lieu', '2024-06-03 13:00:00', '2024-06-03 15:00:00', 20, NOW(), NOW(), 3),
-                                                                                                                     ('C004', 'Mang May Tinh', '2024-06-04 14:00:00', '2024-06-04 16:00:00', 35, NOW(), NOW(), 4),
-                                                                                                                     ('C005', 'Tri Tue Nhan Tao', '2024-06-05 10:00:00', '2024-06-05 12:00:00', 40, NOW(), NOW(), 5);
-
--- Thêm dữ liệu cho bảng student_courses (mỗi sinh viên đăng ký 1 lớp khác nhau, không trùng)
-INSERT INTO student_courses (student_id, course_id, registered_at) VALUES
-                                                                       (1, 1, NOW()),
-                                                                       (2, 2, NOW()),
-                                                                       (3, 3, NOW()),
-                                                                       (4, 4, NOW()),
-                                                                       (5, 5, NOW());
+-- -- Bảng giảng viên (teachers)
+-- CREATE TABLE IF NOT EXISTS teachers (
+--                                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--                                         name VARCHAR(255) NOT NULL,
+--     created_at DATETIME,
+--     updated_at DATETIME
+--     );
+--
+-- -- Bảng sinh viên (students)
+-- CREATE TABLE IF NOT EXISTS students (
+--                                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--                                         code VARCHAR(255) NOT NULL UNIQUE,
+--     name VARCHAR(255) NOT NULL,
+--     created_at DATETIME,
+--     updated_at DATETIME
+--     );
+--
+-- -- Bảng lớp học tín chỉ (courses)
+-- CREATE TABLE IF NOT EXISTS courses (
+--                                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--                                        code VARCHAR(255) NOT NULL UNIQUE,
+--     subject_name VARCHAR(255) NOT NULL,
+--     start_time DATETIME NOT NULL,
+--     end_time DATETIME NOT NULL,
+--     max_students INT NOT NULL,
+--     created_at DATETIME,
+--     updated_at DATETIME,
+--     teacher_id BIGINT,
+--     FOREIGN KEY (teacher_id) REFERENCES teachers(id)
+--     );
+--
+-- -- Bảng liên kết sinh viên - lớp học (student_courses)
+-- CREATE TABLE IF NOT EXISTS student_courses (
+--                                                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--                                                student_id BIGINT,
+--                                                course_id BIGINT,
+--                                                registered_at DATETIME,
+--                                                FOREIGN KEY (student_id) REFERENCES students(id),
+--     FOREIGN KEY (course_id) REFERENCES courses(id)
+--     );
+-- -- Thêm dữ liệu cho bảng teachers
+-- INSERT INTO teachers (name, created_at, updated_at) VALUES
+--                                                         ('Nguyen Van A', NOW(), NOW()),
+--                                                         ('Tran Thi B', NOW(), NOW()),
+--                                                         ('Le Thi C', NOW(), NOW()),
+--                                                         ('Pham Van D', NOW(), NOW()),
+--                                                         ('Hoang Thi E', NOW(), NOW());
+--
+-- -- Thêm dữ liệu cho bảng students
+-- INSERT INTO students (code, name, created_at, updated_at) VALUES
+--                                                               ('SV001', 'Nguyen Minh Anh', NOW(), NOW()),
+--                                                               ('SV002', 'Tran Quoc Bao', NOW(), NOW()),
+--                                                               ('SV003', 'Le Thi Cam', NOW(), NOW()),
+--                                                               ('SV004', 'Pham Van Duong', NOW(), NOW()),
+--                                                               ('SV005', 'Hoang Thi Em', NOW(), NOW());
+--
+-- -- Thêm dữ liệu cho bảng courses
+-- INSERT INTO courses (code, subject_name, start_time, end_time, max_students, created_at, updated_at, teacher_id) VALUES
+--                                                                                                                      ('C001', 'Toan Cao Cap', '2024-06-01 08:00:00', '2024-06-01 10:00:00', 30, NOW(), NOW(), 1),
+--                                                                                                                      ('C002', 'Lap Trinh Java', '2024-06-02 09:00:00', '2024-06-02 11:00:00', 25, NOW(), NOW(), 2),
+--                                                                                                                      ('C003', 'Co So Du Lieu', '2024-06-03 13:00:00', '2024-06-03 15:00:00', 20, NOW(), NOW(), 3),
+--                                                                                                                      ('C004', 'Mang May Tinh', '2024-06-04 14:00:00', '2024-06-04 16:00:00', 35, NOW(), NOW(), 4),
+--                                                                                                                      ('C005', 'Tri Tue Nhan Tao', '2024-06-05 10:00:00', '2024-06-05 12:00:00', 40, NOW(), NOW(), 5);
+--
+-- -- Thêm dữ liệu cho bảng student_courses (mỗi sinh viên đăng ký 1 lớp khác nhau, không trùng)
+-- INSERT INTO student_courses (student_id, course_id, registered_at) VALUES
+--                                                                        (1, 1, NOW()),
+--                                                                        (2, 2, NOW()),
+--                                                                        (3, 3, NOW()),
+--                                                                        (4, 4, NOW()),
+--                                                                        (5, 5, NOW());
