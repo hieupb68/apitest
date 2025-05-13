@@ -20,17 +20,17 @@ public class TeacherController {
     private final TeacherService teacherService;
 
     @PostMapping
-    public TeacherDto createTeacher(@RequestBody TeacherDto dto) {
-        return teacherService.createTeacher(dto);
+    public ResponseEntity<TeacherDto> createTeacher(@Valid @RequestBody TeacherDto dto) {
+        return ResponseEntity.ok(teacherService.createTeacher(dto));
     }
 
     @GetMapping("/{id}")
-    public TeacherDto getTeacher(@PathVariable Long id) {
-        return teacherService.getTeacher(id);
+    public ResponseEntity<TeacherDto> getTeacher(@PathVariable Long id) {
+        return ResponseEntity.ok(teacherService.getTeacher(id));
     }
 
     @GetMapping
-    public List<TeacherDto> getAllTeachers() {
-        return teacherService.getAllTeachers();
+    public ResponseEntity<List<TeacherDto>> getAllTeachers() {
+        return ResponseEntity.ok(teacherService.getAllTeachers());
     }
 }

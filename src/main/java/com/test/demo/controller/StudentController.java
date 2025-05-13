@@ -1,10 +1,10 @@
 package com.test.demo.controller;
 
-
 import com.test.demo.dto.StudentDto;
 import com.test.demo.entity.Student;
 import com.test.demo.service.CourseService;
 import com.test.demo.service.StudentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,17 +21,17 @@ public class StudentController {
     private final StudentService studentService;
 
     @PostMapping
-    public StudentDto createStudent(@RequestBody StudentDto dto) {
-        return studentService.createStudent(dto);
+    public ResponseEntity<StudentDto> createStudent(@Valid @RequestBody StudentDto dto) {
+        return ResponseEntity.ok(studentService.createStudent(dto));
     }
 
     @GetMapping("/{id}")
-    public StudentDto getStudent(@PathVariable Long id) {
-        return studentService.getStudent(id);
+    public ResponseEntity<StudentDto> getStudent(@PathVariable Long id) {
+        return ResponseEntity.ok(studentService.getStudent(id));
     }
 
     @GetMapping
-    public List<StudentDto> getAllStudents() {
-        return studentService.getAllStudents();
+    public ResponseEntity<List<StudentDto>> getAllStudents() {
+        return ResponseEntity.ok(studentService.getAllStudents());
     }
 }

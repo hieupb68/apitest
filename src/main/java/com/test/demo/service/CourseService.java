@@ -31,43 +31,16 @@ public class CourseService {
     private final StudentCourseRepository studentCourseRepo;
 
     public CourseResponse createCourse(CreateCourseRequest req) {
-        // Validate: code
-        if (req.getCode() == null || req.getCode().isBlank())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course code is required");
-        if (req.getCode().length() > 20)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course code is too long (max 20 characters)");
-        if (!req.getCode().matches("^[A-Za-z0-9_-]+$"))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course code contains invalid characters");
-        if (courseRepo.findAll().stream().anyMatch(c -> c.getCode().equalsIgnoreCase(req.getCode())))
+        // Check if course code already exists
+        if (courseRepo.findAll().stream().anyMatch(c -> c.getCode().equalsIgnoreCase(req.getCode()))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course code already exists");
+        }
 
-        // Validate: subjectName
-        if (req.getSubjectName() == null || req.getSubjectName().isBlank())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Subject name is required");
-        if (req.getSubjectName().length() < 3 || req.getSubjectName().length() > 100)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Subject name length must be between 3 and 100 characters");
-
-        // Validate: startTime & endTime
-        if (req.getStartTime() == null || req.getEndTime() == null)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start and end time are required");
-        if (req.getStartTime().isAfter(req.getEndTime()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start time must be before end time");
-        if (req.getStartTime().isBefore(LocalDateTime.now()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Start time must be in the future");
-        if (req.getEndTime().isBefore(LocalDateTime.now()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "End time must be in the future");
-
-        // Validate: maxStudents
-        if (req.getMaxStudents() == null || req.getMaxStudents() <= 0)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Max students must be positive");
-        if (req.getMaxStudents() > 100)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Max students must not exceed 100");
-
-        // Validate: teacherId
+        // Get teacher
         Teacher teacher = teacherRepo.findById(req.getTeacherId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Teacher not found"));
 
-        // Giảng viên chỉ dạy tối đa 4 lớp đang hoạt động
+        // Check teacher's active courses
         long activeCourses = teacher.getCourses().stream()
                 .filter(c -> c.getEndTime().isAfter(LocalDateTime.now()))
                 .count();
@@ -75,7 +48,7 @@ public class CourseService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Teacher already has 4 active courses");
         }
 
-        // Không cho phép trùng giờ với lớp khác của giảng viên
+        // Check time conflicts
         boolean hasTimeConflict = teacher.getCourses().stream()
                 .anyMatch(c -> c.getEndTime().isAfter(req.getStartTime()) && c.getStartTime().isBefore(req.getEndTime()));
         if (hasTimeConflict) {
@@ -98,7 +71,7 @@ public class CourseService {
 
     @Transactional
     public void registerCourse(RegisterCourseRequest req) {
-        // Validate: studentId và courseId phải tồn tại
+        // Get student and course
         Student student = studentRepo.findById(req.getStudentId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
         Course course = courseRepo.findById(req.getCourseId())
@@ -106,24 +79,24 @@ public class CourseService {
 
         LocalDateTime now = LocalDateTime.now();
 
-        // Lớp chưa kết thúc
+        // Check if course has ended
         if (course.getEndTime().isBefore(now)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course has already ended");
         }
 
-        // Chỉ cho đăng ký trước khi bắt đầu 1 tuần
+        // Check registration deadline
         if (now.isAfter(course.getStartTime().minusWeeks(1))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Registration is closed (less than 1 week before start)");
         }
 
-        // Sinh viên chưa đăng ký lớp này
+        // Check if already registered
         boolean alreadyRegistered = student.getStudentCourses().stream()
                 .anyMatch(sc -> sc.getCourse().getId().equals(course.getId()));
         if (alreadyRegistered) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Student already registered this course");
         }
 
-        // Sinh viên chỉ được đăng ký tối đa 6 lớp đang hoạt động
+        // Check student's active courses
         long activeRegistered = student.getStudentCourses().stream()
                 .filter(sc -> sc.getCourse().getEndTime().isAfter(now))
                 .count();
@@ -131,15 +104,15 @@ public class CourseService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Student already registered 6 active courses");
         }
 
-        // Lớp chưa đủ học viên
+        // Check if course is full
         if (course.getStudentCourses().size() >= course.getMaxStudents()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course is full");
         }
 
-        // Không cho phép sinh viên đăng ký 2 lớp trùng giờ
+        // Check time conflicts
         boolean hasTimeConflict = student.getStudentCourses().stream()
                 .map(StudentCourse::getCourse)
-                .filter(c -> c.getEndTime().isAfter(now)) // chỉ xét các lớp còn hoạt động
+                .filter(c -> c.getEndTime().isAfter(now))
                 .anyMatch(c -> c.getStartTime().isBefore(course.getEndTime()) && c.getEndTime().isAfter(course.getStartTime()));
         if (hasTimeConflict) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course time conflicts with another registered course");
@@ -152,17 +125,16 @@ public class CourseService {
                 .build();
         studentCourseRepo.save(sc);
     }
+
     public CourseResponse getCourseDetail(Long id) {
         Course course = courseRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
 
         CourseResponse response = CourseMapper.toResponse(course);
 
-        // Đảm bảo danh sách sinh viên luôn là list rỗng nếu không có ai đăng ký
         if (response.getStudents() == null) {
             response.setStudents(new ArrayList<>());
         } else {
-            // Sắp xếp danh sách sinh viên theo tên ABC
             response.getStudents().sort(Comparator.comparing(s -> s.getStudent().getName()));
         }
 
