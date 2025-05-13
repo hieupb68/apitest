@@ -1,9 +1,8 @@
 package com.test.demo.controller;
 
-import com.test.demo.dto.CourseResponse;
-import com.test.demo.dto.CreateCourseRequest;
-import com.test.demo.dto.RegisterCourseRequest;
-import com.test.demo.dto.RegisteredStudentDto;
+import com.test.demo.dto.response.CourseResponse;
+import com.test.demo.dto.request.CreateCourseRequest;
+import com.test.demo.dto.request.RegisterCourseRequest;
 import com.test.demo.service.CourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

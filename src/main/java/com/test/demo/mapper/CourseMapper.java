@@ -1,6 +1,6 @@
 package com.test.demo.mapper;
 
-import com.test.demo.dto.CourseResponse;
+import com.test.demo.dto.response.CourseResponse;
 import com.test.demo.entity.Course;
 
 import java.util.Comparator;

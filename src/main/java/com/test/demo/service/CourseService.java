@@ -1,8 +1,8 @@
 package com.test.demo.service;
 
-import com.test.demo.dto.CourseResponse;
-import com.test.demo.dto.CreateCourseRequest;
-import com.test.demo.dto.RegisterCourseRequest;
+import com.test.demo.dto.response.CourseResponse;
+import com.test.demo.dto.request.CreateCourseRequest;
+import com.test.demo.dto.request.RegisterCourseRequest;
 import com.test.demo.entity.Course;
 import com.test.demo.entity.Student;
 import com.test.demo.entity.StudentCourse;

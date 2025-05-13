@@ -1,5 +1,7 @@
-package com.test.demo.dto;
+package com.test.demo.dto.response;
 
+import com.test.demo.dto.RegisteredStudentDto;
+import com.test.demo.dto.TeacherDto;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
